@@ -45,19 +45,11 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
-                '' => 'site/index',
-                '<_a:login|logout>' => 'site/<_a>',
-
-                '<_c:[\w-]+>' => '<_c>/index',
-                '<_c:[\w-]+>/<id:\d+>' => '<_c>/view',
-                '<_c:[\w-]+>/<_a:[\w-]+>' => '<_c>/<_a>',
-                '<_c:[\w-]+>/<id:\d+>/<_a:[\w-]+>' => '<_c>/<_a>',
-            ],
-        ],
+        'frontendUrlManager' => require __DIR__ . '/url-manager.php',
+        'backendUrlManager' => require __DIR__ . '/../../backend/config/url-manager.php',
+        'urlManager' => function () {
+            return \Yii::$app->get('frontendUrlManager');
+        },
     ],
     'params' => $params,
 ];

@@ -46,14 +46,11 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
-            ],
-        ],
-        */
+        'backendUrlManager' => require __DIR__ . '/url-manager.php',
+        'frontendUrlManager' => require __DIR__ . '/../../frontend/config/url-manager.php',
+        'urlManager' => function () {
+            return \Yii::$app->get('backendUrlManager');
+        },
     ],
     'as access' => [
         'class' => \yii\filters\AccessControl::class,
