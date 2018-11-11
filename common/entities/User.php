@@ -1,5 +1,6 @@
 <?php
-namespace common\models;
+
+namespace common\entities;
 
 use Yii;
 use yii\base\NotSupportedException;
@@ -26,6 +27,19 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
+    public static function singup(string $username, string $email, string $password): self
+    {
+        $user = new static();
+        $user->username = $username;
+        $user->email = $email;
+        $user->status = self::STATUS_ACTIVE;
+        $user->created_at = time();
+        $user->updated_at = time();
+        $user->setPassword($password);
+        $user->generateAuthKey();
+
+        return $user;
+    }
 
     /**
      * {@inheritdoc}
@@ -185,5 +199,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * Проверяем, что пользователь активный.
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->status === self::STATUS_ACTIVE;
     }
 }
