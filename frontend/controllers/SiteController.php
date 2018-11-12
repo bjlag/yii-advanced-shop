@@ -11,6 +11,7 @@ use frontend\services\auth\PasswordResetService;
 use frontend\services\auth\SignupService;
 use frontend\services\contacts\ContactService;
 use Yii;
+use yii\base\Module;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -20,6 +21,15 @@ use yii\web\Controller;
  */
 class SiteController extends Controller
 {
+    private $passwordResetService;
+
+    public function __construct(string $id, Module $module, PasswordResetService $passwordResetService, array $config = [])
+    {
+        parent::__construct($id, $module, $config);
+
+        $this->passwordResetService = $passwordResetService;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -179,7 +189,7 @@ class SiteController extends Controller
         $form = new PasswordResetRequestForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                (new PasswordResetService())->request($form);
+                $this->passwordResetService->request($form);
                 Yii::$app->session->setFlash('success', 'Проверьте почту и следуйте инструкциям в письме.');
                 return $this->goHome();
             } catch (\DomainException $e) {
@@ -202,10 +212,9 @@ class SiteController extends Controller
     public function actionResetPassword($token)
     {
         $form = new ResetPasswordForm();
-        $service = new PasswordResetService();
 
         try {
-            $user = $service->validateToken($token);
+            $user = $this->passwordResetService->validateToken($token);
         } catch (\DomainException $e) {
             Yii::$app->errorHandler->logException($e);
             Yii::$app->session->setFlash('error', $e->getMessage());
@@ -215,7 +224,7 @@ class SiteController extends Controller
 
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $service->reset($user, $form->password);
+                $this->passwordResetService->reset($user, $form->password);
                 Yii::$app->session->setFlash('success', 'Новый пароль сохранен');
 
                 return $this->goHome();

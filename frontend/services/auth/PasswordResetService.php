@@ -5,9 +5,19 @@ namespace frontend\services\auth;
 use common\entities\User;
 use frontend\forms\PasswordResetRequestForm;
 use Yii;
+use yii\mail\MailerInterface;
 
 class PasswordResetService
 {
+    private $emailFrom;
+    private $mailer;
+
+    public function __construct(array $emailFrom, MailerInterface $mailer)
+    {
+        $this->emailFrom = $emailFrom;
+        $this->mailer = $mailer;
+    }
+
     /**
      * Sends an email with a link, for resetting the password.
      *
@@ -31,13 +41,12 @@ class PasswordResetService
                 Проверьте почту. <br>Запрос можно делать не чаще одно раза в час.");
         }
 
-        $send = Yii::$app
-            ->mailer
+        $send = $this->mailer
             ->compose(
                 ['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'],
                 ['user' => $user]
             )
-            ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name . ' robot'])
+            ->setFrom($this->emailFrom)
             ->setTo($form->email)
             ->setSubject('Password reset for ' . Yii::$app->name)
             ->send();
