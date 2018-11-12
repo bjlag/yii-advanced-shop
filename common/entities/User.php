@@ -116,19 +116,34 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * @return bool
+     * @throws \yii\base\Exception
+     */
+    public function requestPasswordResetToken(): bool
+    {
+        if (!empty($this->password_reset_token) && static::isPasswordResetTokenValid($this->password_reset_token)) {
+            return false;
+        }
+
+        $this->generatePasswordResetToken();
+        if (!$this->save()) {
+            throw new \DomainException('Возникла ошибка при генерации ссылки для восстановления пароля. Попробуйте еще раз.');
+        }
+
+        return true;
+    }
+
+    /**
      * Finds out if password reset token is valid
      *
      * @param string $token password reset token
      * @return bool
      */
-    public static function isPasswordResetTokenValid($token)
+    public static function isPasswordResetTokenValid(string $token): bool
     {
-        if (empty($token)) {
-            return false;
-        }
-
         $timestamp = (int) substr($token, strrpos($token, '_') + 1);
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+
         return $timestamp + $expire >= time();
     }
 
@@ -179,6 +194,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Generates "remember me" authentication key
+     * @throws \yii\base\Exception
      */
     public function generateAuthKey()
     {
@@ -187,6 +203,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Generates new password reset token
+     * @throws \yii\base\Exception
      */
     public function generatePasswordResetToken()
     {
