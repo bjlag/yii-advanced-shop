@@ -9,6 +9,7 @@ use frontend\forms\ResetPasswordForm;
 use frontend\forms\SignupForm;
 use frontend\services\auth\PasswordResetService;
 use frontend\services\auth\SignupService;
+use frontend\services\contacts\ContactService;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -118,20 +119,22 @@ class SiteController extends Controller
      */
     public function actionContact()
     {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-                Yii::$app->session->setFlash('success',
-                    'Thank you for contacting us. We will respond to you as soon as possible.');
-            } else {
-                Yii::$app->session->setFlash('error', 'There was an error sending your message.');
-            }
+        $form = new ContactForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                (new ContactService())->send($form, Yii::$app->params['adminEmail']);
+                Yii::$app->session->setFlash('success', 'Сообщение отправлено! Скоро с вами свяжутся наши менеджеры.');
 
-            return $this->refresh();
+                return $this->refresh();
+
+            } catch (\Exception $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
         }
 
         return $this->render('contact', [
-            'model' => $model,
+            'model' => $form,
         ]);
     }
 
@@ -203,7 +206,7 @@ class SiteController extends Controller
 
         try {
             $user = $service->validateToken($token);
-        } catch(\DomainException $e) {
+        } catch (\DomainException $e) {
             Yii::$app->errorHandler->logException($e);
             Yii::$app->session->setFlash('error', $e->getMessage());
 
