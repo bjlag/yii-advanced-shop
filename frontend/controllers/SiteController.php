@@ -22,12 +22,19 @@ use yii\web\Controller;
 class SiteController extends Controller
 {
     private $passwordResetService;
+    private $contactService;
 
-    public function __construct(string $id, Module $module, PasswordResetService $passwordResetService, array $config = [])
+    public function __construct(
+        string $id,
+        Module $module,
+        PasswordResetService $passwordResetService,
+        ContactService $contactService,
+        array $config = [])
     {
         parent::__construct($id, $module, $config);
 
         $this->passwordResetService = $passwordResetService;
+        $this->contactService = $contactService;
     }
 
     /**
@@ -132,7 +139,7 @@ class SiteController extends Controller
         $form = new ContactForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                (new ContactService())->send($form, Yii::$app->params['adminEmail']);
+                $this->contactService->send($form);
                 Yii::$app->session->setFlash('success', 'Сообщение отправлено! Скоро с вами свяжутся наши менеджеры.');
 
                 return $this->refresh();
