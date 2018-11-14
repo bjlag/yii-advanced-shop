@@ -3,6 +3,7 @@
 namespace common\config\bootstrap;
 
 use common\repositories\UserRepository;
+use common\services\LoginService;
 use frontend\services\auth\PasswordResetService;
 use frontend\services\auth\SignupService;
 use frontend\services\contacts\ContactService;
@@ -28,6 +29,10 @@ class SetUp implements BootstrapInterface
 
         $container->setSingleton(UserRepository::class, function () {
             return new UserRepository();
+        });
+
+        $container->setSingleton(LoginService::class, function () {
+            return new LoginService();
         });
 
         $container->setSingleton(ContactService::class, [], [

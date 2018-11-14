@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\forms\LoginForm;
+use common\services\LoginService;
 use frontend\forms\ContactForm;
 use frontend\forms\PasswordResetRequestForm;
 use frontend\forms\ResetPasswordForm;
@@ -21,6 +22,7 @@ use yii\web\Controller;
  */
 class SiteController extends Controller
 {
+    private $loginService;
     private $signupService;
     private $passwordResetService;
     private $contactService;
@@ -28,6 +30,7 @@ class SiteController extends Controller
     public function __construct(
         string $id,
         Module $module,
+        LoginService $loginService,
         SignupService $signupService,
         PasswordResetService $passwordResetService,
         ContactService $contactService,
@@ -35,6 +38,7 @@ class SiteController extends Controller
     {
         parent::__construct($id, $module, $config);
 
+        $this->loginService = $loginService;
         $this->signupService = $signupService;
         $this->passwordResetService = $passwordResetService;
         $this->contactService = $contactService;
@@ -108,15 +112,19 @@ class SiteController extends Controller
             return $this->goHome();
         }
 
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+        $form = new LoginForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            if ($this->loginService->login($form)) {
+                return $this->goBack();
+            }
+
+            Yii::$app->session->setFlash('error', 'Неверный логин или пароль');
         }
 
-        $model->password = '';
+        $form->password = '';
 
         return $this->render('login', [
-            'model' => $model,
+            'model' => $form,
         ]);
     }
 
