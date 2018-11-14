@@ -1,9 +1,9 @@
 <?php
 
-namespace frontend\forms;
+namespace core\forms\auth;
 
+use core\entities\User;
 use yii\base\Model;
-use common\entities\User;
 
 /**
  * Password reset request form
@@ -23,7 +23,7 @@ class PasswordResetRequestForm extends Model
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'exist',
-                'targetClass' => '\common\entities\User',
+                'targetClass' => '\core\entities\User',
                 'filter' => ['status' => User::STATUS_ACTIVE],
                 'message' => 'Пользователь с указанным емейлом не найден'
             ],

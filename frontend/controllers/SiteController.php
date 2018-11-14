@@ -2,15 +2,15 @@
 
 namespace frontend\controllers;
 
-use common\forms\LoginForm;
-use common\services\LoginService;
-use frontend\forms\ContactForm;
-use frontend\forms\PasswordResetRequestForm;
-use frontend\forms\ResetPasswordForm;
-use frontend\forms\SignupForm;
-use frontend\services\auth\PasswordResetService;
-use frontend\services\auth\SignupService;
-use frontend\services\contacts\ContactService;
+use core\forms\ContactForm;
+use core\forms\auth\LoginForm;
+use core\forms\auth\PasswordResetRequestForm;
+use core\forms\auth\ResetPasswordForm;
+use core\forms\auth\SignupForm;
+use core\services\auth\LoginService;
+use core\services\auth\PasswordResetService;
+use core\services\auth\SignupService;
+use core\services\ContactService;
 use Yii;
 use yii\base\Module;
 use yii\filters\AccessControl;

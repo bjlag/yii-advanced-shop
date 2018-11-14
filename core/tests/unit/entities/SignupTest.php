@@ -2,7 +2,7 @@
 
 namespace common\tests\unit\forms\User;
 
-use common\entities\User;
+use core\entities\User;
 
 /**
  * Login form test
@@ -11,7 +11,7 @@ class SignupTest extends \Codeception\Test\Unit
 {
     public function testSuccess()
     {
-        $user = User::singup(
+        $user = User::requestSingup(
             $username ='test',
             $email = 'test@test.ru',
             $password ='password'

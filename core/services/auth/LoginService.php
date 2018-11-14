@@ -1,9 +1,9 @@
 <?php
 
-namespace common\services;
+namespace core\services\auth;
 
-use common\entities\User;
-use common\forms\LoginForm;
+use core\entities\User;
+use core\forms\auth\LoginForm;
 use Yii;
 
 class LoginService

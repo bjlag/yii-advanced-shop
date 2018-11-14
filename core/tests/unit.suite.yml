@@ -1,0 +1,7 @@
+suite_namespace: core\tests\unit
+actor: UnitTester
+bootstrap: false
+modules:
+    enabled:
+        - Yii2:
+            part: fixtures

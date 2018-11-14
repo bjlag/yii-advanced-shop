@@ -2,11 +2,11 @@
 
 namespace common\config\bootstrap;
 
-use common\repositories\UserRepository;
-use common\services\LoginService;
-use frontend\services\auth\PasswordResetService;
-use frontend\services\auth\SignupService;
-use frontend\services\contacts\ContactService;
+use core\repositories\UserRepository;
+use core\services\auth\LoginService;
+use core\services\auth\PasswordResetService;
+use core\services\auth\SignupService;
+use core\services\ContactService;
 use Yii;
 use yii\base\Application;
 use yii\base\BootstrapInterface;

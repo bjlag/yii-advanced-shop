@@ -1,8 +1,9 @@
 <?php
+
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $user common\entities\User */
+/* @var $user \common\entities\User */
 
 $confirmLink = Yii::$app->urlManager->createAbsoluteUrl(['site/confirm-email', 'token' => $user->email_confirm_token]);
 ?>
