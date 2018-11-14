@@ -3,16 +3,19 @@
 namespace frontend\services\auth;
 
 use common\entities\User;
+use common\repositories\UserRepository;
 use frontend\forms\SignupForm;
 use yii\mail\MailerInterface;
 
 class SignupService
 {
+    private $users;
     private $emailFrom;
     private $mailer;
 
-    public function __construct(array $emailFrom, MailerInterface $mailer)
+    public function __construct(UserRepository $users, array $emailFrom, MailerInterface $mailer)
     {
+        $this->users = $users;
         $this->emailFrom = $emailFrom;
         $this->mailer = $mailer;
     }
@@ -25,9 +28,7 @@ class SignupService
             $form->password
         );
 
-        if (!$user->save()) {
-            throw new \RuntimeException('Ошибка при сохранении пользователя');
-        }
+        $this->users->save($user);
 
         $send = $this->mailer
             ->compose(
@@ -54,10 +55,7 @@ class SignupService
         }
 
         $user->confirmSignup();
-
-        if (!$user->save()) {
-            throw new \RuntimeException('Ошибка при сохранении пользователя');
-        }
+        $this->users->save($user);
 
         return $user;
     }

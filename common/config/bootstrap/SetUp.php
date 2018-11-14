@@ -2,6 +2,7 @@
 
 namespace common\config\bootstrap;
 
+use common\repositories\UserRepository;
 use frontend\services\auth\PasswordResetService;
 use frontend\services\auth\SignupService;
 use frontend\services\contacts\ContactService;
@@ -25,17 +26,23 @@ class SetUp implements BootstrapInterface
             return $app->mailer;
         });
 
+        $container->setSingleton(UserRepository::class, function () {
+            return new UserRepository();
+        });
+
         $container->setSingleton(ContactService::class, [], [
             Yii::$app->params['adminEmail'],
             Instance::of(MailerInterface::class)
         ]);
 
         $container->setSingleton(SignupService::class, [], [
+            Instance::of(UserRepository::class),
             [Yii::$app->params['supportEmail'] => Yii::$app->name . ' robot'],
             Instance::of(MailerInterface::class)
         ]);
 
         $container->setSingleton(PasswordResetService::class, [], [
+            Instance::of(UserRepository::class),
             [Yii::$app->params['supportEmail'] => Yii::$app->name . ' robot'],
             Instance::of(MailerInterface::class)
         ]);

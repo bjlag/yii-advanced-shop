@@ -3,17 +3,20 @@
 namespace frontend\services\auth;
 
 use common\entities\User;
+use common\repositories\UserRepository;
 use frontend\forms\PasswordResetRequestForm;
 use Yii;
 use yii\mail\MailerInterface;
 
 class PasswordResetService
 {
+    private $users;
     private $emailFrom;
     private $mailer;
 
-    public function __construct(array $emailFrom, MailerInterface $mailer)
+    public function __construct(UserRepository $users, array $emailFrom, MailerInterface $mailer)
     {
+        $this->users = $users;
         $this->emailFrom = $emailFrom;
         $this->mailer = $mailer;
     }
@@ -49,10 +52,9 @@ class PasswordResetService
             ->setTo($form->email)
             ->setSubject('Password reset for ' . Yii::$app->name)
             ->send();
-        
+
         if (!$send) {
-            throw new \RuntimeException('Извините, нам не удалось отправить письмо на указанный адрес для восстановления 
-                пароля. Попробуйте еще раз.');
+            throw new \RuntimeException('Ошибка при отправке письма для восстановления пароля.');
         }
     }
 
@@ -83,9 +85,6 @@ class PasswordResetService
     public function reset(User $user, string $password): void
     {
         $user->resetPassword($password);
-
-        if(!$user->save(false)) {
-            throw new \RuntimeException('Не удалось сохранить новый пароль.');
-        }
+        $this->users->save($user);
     }
 }
