@@ -64,6 +64,34 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * Сброс пароля.
+     * @param string $password
+     */
+    public function resetPassword(string $password): void
+    {
+        $this->setPassword($password);
+        $this->removePasswordResetToken();
+    }
+
+    /**
+     * Проверяем, что пользователь c неподтвержденным емейлом.
+     * @return bool
+     */
+    public function isWait(): bool
+    {
+        return $this->status === self::STATUS_WAIT;
+    }
+
+    /**
+     * Проверяем, что пользователь активный.
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->status === self::STATUS_ACTIVE;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -164,20 +192,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Finds out if password reset token is valid
-     *
-     * @param string $token password reset token
-     * @return bool
-     */
-    public static function isPasswordResetTokenValid(string $token): bool
-    {
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
-
-        return $timestamp + $expire >= time();
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getId()
@@ -213,11 +227,25 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * Finds out if password reset token is valid
+     *
+     * @param string $token password reset token
+     * @return bool
+     */
+    private static function isPasswordResetTokenValid(string $token): bool
+    {
+        $timestamp = (int)substr($token, strrpos($token, '_') + 1);
+        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+
+        return $timestamp + $expire >= time();
+    }
+
+    /**
      * Generates password hash from password and sets it to the model
      *
      * @param string $password
      */
-    public function setPassword($password)
+    private function setPassword($password)
     {
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
@@ -226,7 +254,7 @@ class User extends ActiveRecord implements IdentityInterface
      * Generates "remember me" authentication key
      * @throws \yii\base\Exception
      */
-    public function generateAuthKey()
+    private function generateAuthKey()
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
@@ -235,7 +263,7 @@ class User extends ActiveRecord implements IdentityInterface
      * Генерация токена на подтверждение емейла.
      * @throws \yii\base\Exception
      */
-    public function generateEmailConfirmToken()
+    private function generateEmailConfirmToken()
     {
         $this->email_confirm_token = Yii::$app->security->generateRandomString();
     }
@@ -244,7 +272,7 @@ class User extends ActiveRecord implements IdentityInterface
      * Generates new password reset token
      * @throws \yii\base\Exception
      */
-    public function generatePasswordResetToken()
+    private function generatePasswordResetToken()
     {
         $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
@@ -252,7 +280,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * Removes password reset token
      */
-    public function removePasswordResetToken()
+    private function removePasswordResetToken()
     {
         $this->password_reset_token = null;
     }
@@ -260,26 +288,8 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * Удаление токена на подтверждение пароля
      */
-    public function removeEmailConfirmToken(): void
+    private function removeEmailConfirmToken(): void
     {
         $this->email_confirm_token = null;
-    }
-
-    /**
-     * Проверяем, что пользователь c неподтвержденным емейлом.
-     * @return bool
-     */
-    public function isWait(): bool
-    {
-        return $this->status === self::STATUS_WAIT;
-    }
-
-    /**
-     * Проверяем, что пользователь активный.
-     * @return bool
-     */
-    public function isActive(): bool
-    {
-        return $this->status === self::STATUS_ACTIVE;
     }
 }

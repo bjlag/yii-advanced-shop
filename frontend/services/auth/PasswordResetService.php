@@ -19,8 +19,7 @@ class PasswordResetService
     }
 
     /**
-     * Sends an email with a link, for resetting the password.
-     *
+     * Отправить письмо на сброс пароля.
      * @param PasswordResetRequestForm $form
      * @return void whether the email was send
      * @throws \yii\base\Exception
@@ -58,6 +57,7 @@ class PasswordResetService
     }
 
     /**
+     * Валидация токена.
      * @param string $token
      * @return User
      */
@@ -76,16 +76,16 @@ class PasswordResetService
     }
 
     /**
+     * Сброс пароля.
      * @param User $user
      * @param string $password
      */
     public function reset(User $user, string $password): void
     {
-        $user->setPassword($password);
-        $user->removePasswordResetToken();
+        $user->resetPassword($password);
 
         if(!$user->save(false)) {
-            throw new \RuntimeException('Не удалось сохранить новый пароль. Попробуйте еще раз.');
+            throw new \RuntimeException('Не удалось сохранить новый пароль.');
         }
     }
 }
