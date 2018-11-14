@@ -16,6 +16,7 @@ use yii\web\IdentityInterface;
  * @property string $password_hash
  * @property string $password_reset_token
  * @property string $email
+ * @property string email_confirm_token
  * @property string $auth_key
  * @property integer $status
  * @property integer $created_at
@@ -24,21 +25,42 @@ use yii\web\IdentityInterface;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-    const STATUS_DELETED = 0;
+    const STATUS_WAIT = 0;
     const STATUS_ACTIVE = 10;
 
-    public static function singup(string $username, string $email, string $password): self
+    /**
+     * Запрос на регистрацию пользователя.
+     * @param string $username
+     * @param string $email
+     * @param string $password
+     * @return User
+     */
+    public static function requestSingup(string $username, string $email, string $password): self
     {
         $user = new static();
         $user->username = $username;
         $user->email = $email;
-        $user->status = self::STATUS_ACTIVE;
+        $user->status = self::STATUS_WAIT;
         $user->created_at = time();
         $user->updated_at = time();
+        $user->generateEmailConfirmToken();
         $user->setPassword($password);
         $user->generateAuthKey();
 
         return $user;
+    }
+
+    /**
+     * Подтверждение адреса электронной почты и активация пользователя.
+     */
+    public function confirmSignup(): void
+    {
+        if (!$this->isWait()) {
+            throw new \DomainException('Пользователь уже активирован');
+        }
+
+        $this->status = self::STATUS_ACTIVE;
+        $this->removeEmailConfirmToken();
     }
 
     /**
@@ -66,7 +88,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_WAIT]],
         ];
     }
 
@@ -112,6 +134,14 @@ class User extends ActiveRecord implements IdentityInterface
         return static::findOne([
             'password_reset_token' => $token,
             'status' => self::STATUS_ACTIVE,
+        ]);
+    }
+
+    public static function findByEmailConfirmToken($token)
+    {
+        return static::findOne([
+            'email_confirm_token' => $token,
+            'status' => self::STATUS_WAIT,
         ]);
     }
 
@@ -202,6 +232,15 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * Генерация токена на подтверждение емейла.
+     * @throws \yii\base\Exception
+     */
+    public function generateEmailConfirmToken()
+    {
+        $this->email_confirm_token = Yii::$app->security->generateRandomString();
+    }
+
+    /**
      * Generates new password reset token
      * @throws \yii\base\Exception
      */
@@ -216,6 +255,23 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * Удаление токена на подтверждение пароля
+     */
+    public function removeEmailConfirmToken(): void
+    {
+        $this->email_confirm_token = null;
+    }
+
+    /**
+     * Проверяем, что пользователь c неподтвержденным емейлом.
+     * @return bool
+     */
+    public function isWait(): bool
+    {
+        return $this->status === self::STATUS_WAIT;
     }
 
     /**

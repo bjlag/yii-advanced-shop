@@ -21,18 +21,21 @@ use yii\web\Controller;
  */
 class SiteController extends Controller
 {
+    private $signupService;
     private $passwordResetService;
     private $contactService;
 
     public function __construct(
         string $id,
         Module $module,
+        SignupService $signupService,
         PasswordResetService $passwordResetService,
         ContactService $contactService,
         array $config = [])
     {
         parent::__construct($id, $module, $config);
 
+        $this->signupService = $signupService;
         $this->passwordResetService = $passwordResetService;
         $this->contactService = $contactService;
     }
@@ -174,16 +177,33 @@ class SiteController extends Controller
     {
         $form = new SignupForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            if ($user = (new SignupService())->signup($form)) {
-                if (Yii::$app->getUser()->login($user)) {
-                    return $this->goHome();
-                }
+            if ($user = $this->signupService->request($form)) {
+                Yii::$app->session->setFlash('success', 'Для подтверждения емейла проверьте почту и следуйте инструкциям в письме.');
+                return $this->goHome();
             }
         }
 
         return $this->render('signup', [
             'model' => $form,
         ]);
+    }
+
+    /**
+     * Подтверждение адреса электронной почты.
+     * @param string $token
+     * @return \yii\web\Response
+     */
+    public function actionConfirmEmail(string $token)
+    {
+        try {
+            $user = $this->signupService->confirm($token);
+            Yii::$app->getUser()->login($user);
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('success', $e->getMessage());
+        }
+
+        return $this->goHome();
     }
 
     /**
