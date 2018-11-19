@@ -1,7 +1,8 @@
 <?php
 
-namespace core\entities;
+namespace core\entities\User;
 
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -21,12 +22,14 @@ use yii\web\IdentityInterface;
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
- * @property string $password write-only password
+ * @property Network $networks
  */
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_WAIT = 0;
     const STATUS_ACTIVE = 10;
+
+    const RELATION_NETWORKS = 'networks';
 
     /**
      * Запрос на регистрацию пользователя.
@@ -35,7 +38,7 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string $password
      * @return User
      */
-    public static function requestSingup(string $username, string $email, string $password): self
+    public static function requestSignup(string $username, string $email, string $password): self
     {
         $user = new static();
         $user->username = $username;
@@ -45,6 +48,21 @@ class User extends ActiveRecord implements IdentityInterface
         $user->updated_at = time();
         $user->generateEmailConfirmToken();
         $user->setPassword($password);
+        $user->generateAuthKey();
+
+        return $user;
+    }
+
+    /**
+     * Создание пользователя через социальную сеть.
+     * @return User
+     */
+    public static function networkSignup(): self
+    {
+        $user = new static();
+        $user->status = self::STATUS_ACTIVE;
+        $user->created_at = time();
+        $user->updated_at = time();
         $user->generateAuthKey();
 
         return $user;
@@ -105,8 +123,32 @@ class User extends ActiveRecord implements IdentityInterface
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
+            'saveRelations' => [
+                'class' => SaveRelationsBehavior::class,
+                'relations' => [
+                    'networks'
+                ],
+            ],
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function transactions()
+    {
+        return [
+            self::SCENARIO_DEFAULT => self::OP_ALL,
+        ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNetworks()
+    {
+        return $this->hasMany(Network::class, ['user_id' => 'id']);
     }
 
     /**

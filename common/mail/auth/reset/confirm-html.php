@@ -1,8 +1,9 @@
 <?php
+
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $user core\entities\User */
+/* @var $user \core\entities\User\User */
 
 $resetLink = Yii::$app->urlManager->createAbsoluteUrl(['auth/reset/reset', 'token' => $user->password_reset_token]);
 ?>

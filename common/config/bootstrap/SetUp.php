@@ -4,6 +4,7 @@ namespace common\config\bootstrap;
 
 use core\repositories\UserRepository;
 use core\services\auth\LoginService;
+use core\services\auth\NetworkService;
 use core\services\auth\PasswordResetService;
 use core\services\auth\SignupService;
 use core\services\ContactService;
@@ -50,6 +51,10 @@ class SetUp implements BootstrapInterface
             Instance::of(UserRepository::class),
             [Yii::$app->params['supportEmail'] => Yii::$app->name . ' robot'],
             Instance::of(MailerInterface::class)
+        ]);
+
+        $container->setSingleton(NetworkService::class, [], [
+            Instance::of(UserRepository::class)
         ]);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace core\services\auth;
 
-use core\entities\User;
+use core\entities\User\User;
 use core\forms\auth\SignupForm;
 use core\repositories\UserRepository;
 use yii\mail\MailerInterface;
@@ -22,7 +22,7 @@ class SignupService
 
     public function request(SignupForm $form): User
     {
-        $user = User::requestSingup(
+        $user = User::requestSignup(
             $form->username,
             $form->email,
             $form->password

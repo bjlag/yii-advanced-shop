@@ -2,8 +2,8 @@
 
 namespace frontend\tests\unit\models;
 
-use core\entities\User;
 use common\fixtures\UserFixture as UserFixture;
+use core\entities\User\User;
 use core\forms\auth\PasswordResetRequestForm;
 use Yii;
 

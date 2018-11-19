@@ -18,7 +18,7 @@ return [
             'cookieValidationKey' => $params['cookieValidationKey'],
         ],
         'user' => [
-            'identityClass' => 'core\entities\User',
+            'identityClass' => 'core\entities\User\User',
             'enableAutoLogin' => true,
             'identityCookie' => [
                 'name' => '_identity',
