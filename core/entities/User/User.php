@@ -32,6 +32,27 @@ class User extends ActiveRecord implements IdentityInterface
     const RELATION_NETWORKS = 'networks';
 
     /**
+     * Ручное создание пользователя из админки.
+     * @param string $username
+     * @param string $email
+     * @param string $password
+     * @return User
+     */
+    public static function create(string $username, string $email, string $password): self
+    {
+        $user = new static();
+        $user->username = $username;
+        $user->email = $email;
+        $user->status = self::STATUS_ACTIVE;
+        $user->created_at = time();
+        $user->updated_at = time();
+        $user->setPassword($password);
+        $user->generateAuthKey();
+
+        return $user;
+    }
+
+    /**
      * Запрос на регистрацию пользователя.
      * @param string $username
      * @param string $email

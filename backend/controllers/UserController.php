@@ -4,7 +4,10 @@ namespace backend\controllers;
 
 use backend\forms\UserSearch;
 use core\entities\User\User;
+use core\forms\manage\User\CreateUserForm;
+use core\services\manage\UserManageService;
 use Yii;
+use yii\base\Module;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -14,6 +17,22 @@ use yii\web\NotFoundHttpException;
  */
 class UserController extends Controller
 {
+    private $service;
+
+    /**
+     * UserController constructor.
+     * @param string $id
+     * @param Module $module
+     * @param UserManageService $manageService
+     * @param array $config
+     */
+    public function __construct(string $id, Module $module, UserManageService $manageService, array $config = [])
+    {
+        parent::__construct($id, $module, $config);
+
+        $this->service = $manageService;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -64,14 +83,22 @@ class UserController extends Controller
      */
     public function actionCreate()
     {
-        $model = new User();
+        $form = new CreateUserForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $user = $this->service->create($form);
+                Yii::$app->session->setFlash('success', 'Пользователь успешно создан');
+                return $this->redirect(['view', 'id' => $user->id]);
+
+            } catch (\DomainException $e) {
+                Yii::$app->session->setFlash('error', $e->getMessage());
+                Yii::$app->errorHandler->logException($e);
+            }
         }
 
         return $this->render('create', [
-            'model' => $model,
+            'model' => $form,
         ]);
     }
 

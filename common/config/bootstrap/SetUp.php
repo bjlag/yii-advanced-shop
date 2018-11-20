@@ -8,6 +8,7 @@ use core\services\auth\NetworkService;
 use core\services\auth\PasswordResetService;
 use core\services\auth\SignupService;
 use core\services\ContactService;
+use core\services\manage\UserManageService;
 use Yii;
 use yii\base\Application;
 use yii\base\BootstrapInterface;
@@ -54,6 +55,10 @@ class SetUp implements BootstrapInterface
         ]);
 
         $container->setSingleton(NetworkService::class, [], [
+            Instance::of(UserRepository::class)
+        ]);
+
+        $container->setSingleton(UserManageService::class, [], [
             Instance::of(UserRepository::class)
         ]);
     }
