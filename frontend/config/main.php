@@ -18,7 +18,7 @@ return [
         ],
         'user' => [
             'identityClass' => 'core\entities\User\User',
-            'loginUrl' => 'login',
+            'loginUrl' => '/login',
             'enableAutoLogin' => true,
             'identityCookie' => [
                 'name' => '_identity',

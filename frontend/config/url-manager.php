@@ -16,6 +16,8 @@ return [
         'login/reset' => 'auth/reset/request',
         'login/reset/confirm' => 'auth/reset/reset',
 
+        'cabinet' => 'cabinet/default',
+
         '<_c:[\w-]+>' => '<_c>/index',
         '<_c:[\w-]+>/<id:\d+>' => '<_c>/view',
         '<_c:[\w-]+>/<_a:[\w-]+>' => '<_c>/<_a>',
