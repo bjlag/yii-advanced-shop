@@ -33,7 +33,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     'id',
                     'username',
                     'email:email',
-                    'status',
+                    [
+                        'attribute' => 'status',
+                        'value' => \core\helpers\UserHelpers::statusTag($model->status),
+                        'format' => 'raw'
+                    ],
                     'created_at:datetime',
                     'updated_at:datetime',
                 ],
