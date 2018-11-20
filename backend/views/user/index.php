@@ -29,7 +29,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     'id',
                     'username',
                     'email:email',
-                    'status',
+                    [
+                        'attribute' => 'status',
+                        'value' => function (\core\entities\User\User $user) {
+                            return \core\helpers\UserHelpers::statusTag($user->status);
+                        },
+                        'filter' => \core\helpers\UserHelpers::statusList(),
+                        'format' => 'raw'
+                    ],
                     'created_at:datetime',
                     'updated_at:datetime',
 
