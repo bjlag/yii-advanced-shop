@@ -5,6 +5,7 @@ namespace backend\controllers;
 use backend\forms\UserSearch;
 use core\entities\User\User;
 use core\forms\manage\User\CreateUserForm;
+use core\forms\manage\User\UpdateUserForm;
 use core\services\manage\UserManageService;
 use Yii;
 use yii\base\Module;
@@ -111,14 +112,18 @@ class UserController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        $user = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        $form = new UpdateUserForm($user);
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            $this->service->update($id, $form);
+            Yii::$app->session->setFlash('success', 'Пользователь изменен');
+            return $this->redirect(['view', 'id' => $id]);
         }
 
         return $this->render('update', [
-            'model' => $model,
+            'user' => $user,
+            'model' => $form
         ]);
     }
 
@@ -149,6 +154,6 @@ class UserController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException('Пользователь не найден');
     }
 }

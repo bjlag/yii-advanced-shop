@@ -53,6 +53,20 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * Обновить данные существующего пользователя.
+     * @param string $username
+     * @param string $email
+     * @param $status
+     */
+    public function edit(string $username, string $email, $status): void
+    {
+        $this->username = $username;
+        $this->email = $email;
+        $this->status = $status;
+        $this->updated_at = time();
+    }
+
+    /**
      * Запрос на регистрацию пользователя.
      * @param string $username
      * @param string $email

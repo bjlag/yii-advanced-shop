@@ -3,6 +3,7 @@
 namespace core\repositories;
 
 use core\entities\User\User;
+use yii\web\NotFoundHttpException;
 
 class UserRepository
 {
@@ -15,6 +16,20 @@ class UserRepository
         if (!$user->save()) {
             throw new \RuntimeException('Ошибка при сохранении пользователя.');
         }
+    }
+
+    /**
+     * @param int $id
+     * @return User
+     * @throws NotFoundHttpException
+     */
+    public function byId(int $id): User
+    {
+        if (($model = User::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('Пользователь не найден');
     }
 
     /**
