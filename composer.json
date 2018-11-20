@@ -21,7 +21,10 @@
         "dmstr/yii2-adminlte-asset": "^2.1",
         "yiisoft/yii2-authclient": "^2.1",
         "webmozart/assert": "^1.3",
-        "la-haute-societe/yii2-save-relations-behavior": "*"
+        "la-haute-societe/yii2-save-relations-behavior": "*",
+        "kartik-v/yii2-widgets": "*",
+        "kartik-v/yii2-date-range": "dev-master",
+        "kartik-v/yii2-field-range": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

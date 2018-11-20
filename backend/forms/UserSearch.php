@@ -15,8 +15,10 @@ class UserSearch extends Model
     public $username;
     public $status;
     public $email;
-    public $created_at;
-    public $updated_at;
+    public $created_from;
+    public $created_to;
+    public $updated_from;
+    public $updated_to;
 
     /**
      * {@inheritdoc}
@@ -24,8 +26,9 @@ class UserSearch extends Model
     public function rules()
     {
         return [
-            [['id', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'status'], 'integer'],
             [['username', 'email'], 'safe'],
+            [['created_from', 'created_to', 'updated_from', 'updated_to'], 'date', 'format' => 'php:d.m.Y']
         ];
     }
 
@@ -52,12 +55,14 @@ class UserSearch extends Model
         $query->andFilterWhere([
             'id' => $this->id,
             'status' => $this->status,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ]);
 
         $query->andFilterWhere(['like', 'username', $this->username])
-            ->andFilterWhere(['like', 'email', $this->email]);
+            ->andFilterWhere(['like', 'email', $this->email])
+            ->andFilterWhere(['>=', 'created_at', $this->created_from ? strtotime($this->created_from . ' 00:00:00') : null])
+            ->andFilterWhere(['<=', 'created_at', $this->created_to ? strtotime($this->created_to . ' 23:59:59') : null])
+            ->andFilterWhere(['>=', 'updated_at', $this->updated_from ? strtotime($this->updated_from . ' 00:00:00') : null])
+            ->andFilterWhere(['<=', 'updated_at', $this->updated_to ? strtotime($this->updated_to . ' 23:59:59') : null]);
 
         return $dataProvider;
     }

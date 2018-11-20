@@ -1,5 +1,6 @@
 <?php
 
+use core\helpers\WidgetHelpers;
 use yii\grid\GridView;
 use yii\helpers\Html;
 
@@ -9,11 +10,12 @@ use yii\helpers\Html;
 
 $this->title = 'Пользователи';
 $this->params['breadcrumbs'][] = $this->title;
+
+$datePickerCreated = WidgetHelpers::DatePickerRange($searchModel, 'created_from', 'created_to');
+$datePickerUpdated = WidgetHelpers::DatePickerRange($searchModel, 'updated_from', 'updated_to');
 ?>
 
 <div class="user-index">
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
         <?= Html::a('Добавить', ['create'], ['class' => 'btn btn-success']) ?>
@@ -37,8 +39,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filter' => \core\helpers\UserHelpers::statusList(),
                         'format' => 'raw'
                     ],
-                    'created_at:datetime',
-                    'updated_at:datetime',
+                    [
+                        'attribute' => 'created_at',
+                        'filter' => $datePickerCreated,
+                        'format' => 'datetime'
+                    ],
+                    [
+                        'attribute' => 'updated_at',
+                        'filter' => $datePickerUpdated,
+                        'format' => 'datetime'
+                    ],
 
                     ['class' => 'yii\grid\ActionColumn'],
                 ],
