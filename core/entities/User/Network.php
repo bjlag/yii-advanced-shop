@@ -33,6 +33,16 @@ class Network extends \yii\db\ActiveRecord
     }
 
     /**
+     * @param string $network
+     * @param string $identity
+     * @return bool
+     */
+    public function isFor(string $network, string $identity): bool
+    {
+        return $this->network === $network && $this->identity === $identity;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function tableName()

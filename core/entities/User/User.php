@@ -54,24 +54,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Создание пользователя через социальную сеть.
-     * @param string $network
-     * @param string $identity
-     * @return User
-     */
-    public static function networkSignup(string $network, string $identity): self
-    {
-        $user = new static();
-        $user->status = self::STATUS_ACTIVE;
-        $user->created_at = time();
-        $user->updated_at = time();
-        $user->generateAuthKey();
-        $user->networks = Network::create($network, $identity);
-
-        return $user;
-    }
-
-    /**
      * Подтверждение адреса электронной почты и активация пользователя.
      */
     public function confirmSignup(): void
@@ -92,6 +74,46 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->setPassword($password);
         $this->removePasswordResetToken();
+    }
+
+    /**
+     * Создание пользователя через социальную сеть.
+     * @param string $network
+     * @param string $identity
+     * @return User
+     */
+    public static function networkSignup(string $network, string $identity): self
+    {
+        $user = new static();
+        $user->status = self::STATUS_ACTIVE;
+        $user->created_at = time();
+        $user->updated_at = time();
+        $user->generateAuthKey();
+        $user->networks = Network::create($network, $identity);
+
+        return $user;
+    }
+
+    /**
+     * Добавить пользователю социальную сеть.
+     * @param string $network
+     * @param string $identity
+     * @return User
+     */
+    public function attachNetwork(string $network, string $identity): self
+    {
+        $networks = $this->networks;
+        /** @var Network $current */
+        foreach ($networks as $current) {
+            if ($current->isFor($network, $identity)) {
+                throw new \DomainException('Социальная сеть уже используется');
+            }
+        }
+
+        $networks[] = Network::create($network, $identity);
+        $this->networks = $networks;
+
+        return $this;
     }
 
     /**

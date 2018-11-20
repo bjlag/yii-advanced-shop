@@ -4,6 +4,7 @@ namespace core\services\auth;
 
 use core\entities\User\User;
 use core\repositories\UserRepository;
+use yii\web\IdentityInterface;
 
 /**
  * Class NetworkService
@@ -38,5 +39,21 @@ class NetworkService
         $this->users->save($user);
 
         return $user;
+    }
+
+    /**
+     * Добавить социальную сеть переданному пользователю.
+     * @param User|IdentityInterface $user
+     * @param string $network
+     * @param string $identity
+     */
+    public function attach(User $user, string $network, string $identity): void
+    {
+        if ($this->users->findByNetwork($network, $identity)) {
+            throw new \DomainException('Социальная сеть уже используется');
+        }
+
+        $user->attachNetwork($network, $identity);
+        $this->users->save($user);
     }
 }
