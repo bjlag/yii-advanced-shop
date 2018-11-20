@@ -2,7 +2,6 @@
 
 namespace core\services\auth;
 
-use core\entities\User\Network;
 use core\entities\User\User;
 use core\repositories\UserRepository;
 
@@ -31,13 +30,11 @@ class NetworkService
      */
     public function auth(string $network, string $identity): User
     {
-        $user = $this->users->findByNetwork($network, $identity);
-        if ($user) {
+        if ($user = $this->users->findByNetwork($network, $identity)) {
             return $user;
         }
 
-        $user = User::networkSignup();
-        $user->networks = Network::create($network, $identity);
+        $user = User::networkSignup($network, $identity);
         $this->users->save($user);
 
         return $user;

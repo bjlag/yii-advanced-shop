@@ -45,7 +45,7 @@ class NetworkController extends Controller
     /**
      * @param ClientInterface $client
      */
-    public function onAuthSuccess(ClientInterface $client): void
+    public function onAuthSuccess(ClientInterface $client)
     {
         $network = $client->getId();
         $attributes = $client->getUserAttributes();
@@ -53,10 +53,10 @@ class NetworkController extends Controller
 
         try {
             $user = $this->service->auth($network, $identity);
-            \Yii::$app->user->login($user);
+            \Yii::$app->user->login($user, \Yii::$app->params['user.passwordResetTokenExpire']);
         } catch (\DomainException $e) {
             \Yii::$app->errorHandler->logException($e);
-            \Yii::$app->session->setFlash($e->getMessage());
+            \Yii::$app->session->setFlash('error', $e->getMessage());
         }
     }
 }

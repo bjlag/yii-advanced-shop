@@ -55,15 +55,18 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Создание пользователя через социальную сеть.
+     * @param string $network
+     * @param string $identity
      * @return User
      */
-    public static function networkSignup(): self
+    public static function networkSignup(string $network, string $identity): self
     {
         $user = new static();
         $user->status = self::STATUS_ACTIVE;
         $user->created_at = time();
         $user->updated_at = time();
         $user->generateAuthKey();
+        $user->networks = Network::create($network, $identity);
 
         return $user;
     }
