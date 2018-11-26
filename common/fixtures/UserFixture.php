@@ -1,9 +1,10 @@
 <?php
 namespace common\fixtures;
 
+use core\entities\User\User;
 use yii\test\ActiveFixture;
 
 class UserFixture extends ActiveFixture
 {
-    public $modelClass = 'common\entities\User';
+    public $modelClass = User::class;
 }
