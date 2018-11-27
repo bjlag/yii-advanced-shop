@@ -102,6 +102,25 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * Запрос на сброс пароля.
+     * @return bool
+     * @throws \yii\base\Exception
+     */
+    public function requestPasswordResetToken(): bool
+    {
+        if (!empty($this->password_reset_token) && static::isPasswordResetTokenValid($this->password_reset_token)) {
+            return false;
+        }
+
+        $this->generatePasswordResetToken();
+        if (!$this->save()) {
+            throw new \DomainException('Возникла ошибка при генерации ссылки для восстановления пароля. Попробуйте еще раз.');
+        }
+
+        return true;
+    }
+
+    /**
      * Сброс пароля.
      * @param string $password
      */
@@ -285,24 +304,6 @@ class User extends ActiveRecord implements IdentityInterface
             'email_confirm_token' => $token,
             'status' => self::STATUS_WAIT,
         ]);
-    }
-
-    /**
-     * @return bool
-     * @throws \yii\base\Exception
-     */
-    public function requestPasswordResetToken(): bool
-    {
-        if (!empty($this->password_reset_token) && static::isPasswordResetTokenValid($this->password_reset_token)) {
-            return false;
-        }
-
-        $this->generatePasswordResetToken();
-        if (!$this->save()) {
-            throw new \DomainException('Возникла ошибка при генерации ссылки для восстановления пароля. Попробуйте еще раз.');
-        }
-
-        return true;
     }
 
     /**
