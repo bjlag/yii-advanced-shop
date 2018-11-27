@@ -1,6 +1,6 @@
 <?php
 
-namespace common\tests\unit\forms;
+namespace core\tests\unit\forms\auth;
 
 use common\fixtures\UserFixture;
 use core\forms\auth\LoginForm;
