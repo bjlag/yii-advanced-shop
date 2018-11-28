@@ -33,6 +33,20 @@ class UserRepository
     }
 
     /**
+     * Поиск пользователя по адресу электронной почты.
+     * @param string $email
+     * @return User
+     */
+    public function byEmail(string $email): User
+    {
+        if ($model = User::findOne(['email' => $email])) {
+            return $model;
+        }
+
+        throw new \DomainException("Пользователь с емейлом {$email} не найден!");
+    }
+
+    /**
      * Поиск пользователя по социальной сети.
      * @param string $network
      * @param string $identity

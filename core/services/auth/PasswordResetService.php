@@ -29,13 +29,11 @@ class PasswordResetService
      */
     public function request(PasswordResetRequestForm $form): void
     {
-        $user = User::findOne([
-            'status' => User::STATUS_ACTIVE,
-            'email' => $form->email,
-        ]);
+        /** @var User $user */
+        $user = $this->users->byEmail($form->email);
 
-        if (!$user) {
-            throw new \DomainException("Пользователь с емейлом {$form->email} не найден!");
+        if (!$user->isActive()) {
+            throw new \DomainException("Пользователь найден, но его учетная запись не активна!");
         }
 
         if (!$user->requestPasswordResetToken()) {
