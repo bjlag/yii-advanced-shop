@@ -36,10 +36,8 @@ class PasswordResetService
             throw new \DomainException("Пользователь найден, но его учетная запись не активна!");
         }
 
-        if (!$user->requestPasswordResetToken()) {
-            throw new \DomainException("На емейл {$form->email} уже было отправлено письмо на восстановление пароля! 
-                Проверьте почту. <br>Запрос можно делать не чаще одно раза в час.");
-        }
+        $user->requestPasswordResetToken();
+        $this->users->save($user);
 
         $send = $this->mailer
             ->compose(

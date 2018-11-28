@@ -103,21 +103,16 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Запрос на сброс пароля.
-     * @return bool
      * @throws \yii\base\Exception
      */
-    public function requestPasswordResetToken(): bool
+    public function requestPasswordResetToken(): void
     {
         if (!empty($this->password_reset_token) && static::isPasswordResetTokenValid($this->password_reset_token)) {
-            return false;
+            throw new \DomainException("На емейл {$this->email} уже было отправлено письмо на восстановление пароля! 
+                Проверьте почту. <br>Запрос можно делать не чаще одно раза в час.");
         }
 
         $this->generatePasswordResetToken();
-        if (!$this->save()) {
-            throw new \DomainException('Возникла ошибка при генерации ссылки для восстановления пароля. Попробуйте еще раз.');
-        }
-
-        return true;
     }
 
     /**
