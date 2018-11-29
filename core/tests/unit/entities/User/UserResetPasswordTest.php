@@ -32,11 +32,15 @@ class UserResetPasswordTest extends \Codeception\Test\Unit
      */
     public function testRequestPasswordReset()
     {
-        $result = $this->user->requestPasswordResetToken();
+        expect($this->user->password_reset_token)->isEmpty();
 
-        expect('Метод должен вернуть TRUE', $result)->true();
+        $this->user->requestPasswordResetToken();
+
         expect('Должен установиться токен для сброса пароля', $this->user->password_reset_token)->notEmpty();
-        expect('При повторном сбросе должен вернуть FALSE', $this->user->requestPasswordResetToken())->false();
+
+        $this->tester->expectException(\DomainException::class, function () {
+            $this->user->requestPasswordResetToken();
+        });
     }
 
     public function testResetPassword()
