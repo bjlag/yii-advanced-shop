@@ -10,6 +10,7 @@ return [
         'created_at' => '1402312317',
         'updated_at' => '1402312317',
         'email' => 'nicole.paucek@schultz.info',
+        'email_confirm_token' => 'ExzkCOaYc1L8IOBs4wdTGGbgNiG3Wz1D',
         'status' => 10
     ],
     'wait' => [
@@ -21,6 +22,7 @@ return [
         'created_at' => '1402312317',
         'updated_at' => '1402312317',
         'email' => 'nicole.paucek2@schultz.info',
+        'email_confirm_token' => 'ExzkCOaYc1L8IOBs4wdTGGbgNiG3Wz1S',
         'status' => 0
     ],
 ];
