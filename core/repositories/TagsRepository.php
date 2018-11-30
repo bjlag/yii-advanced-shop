@@ -3,6 +3,7 @@
 namespace core\repositories;
 
 use core\entities\shop\Tags;
+use yii\web\NotFoundHttpException;
 
 class TagsRepository
 {
@@ -33,6 +34,7 @@ class TagsRepository
      * Найти метку по ее ID.
      * @param int $id
      * @return Tags
+     * @throws NotFoundHttpException
      */
     public function byId(int $id): Tags
     {
@@ -40,6 +42,6 @@ class TagsRepository
             return $tag;
         }
 
-        throw new \DomainException('Метка не найдена');
+        throw new NotFoundHttpException('Метка не найдена.');
     }
 }
