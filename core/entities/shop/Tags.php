@@ -63,8 +63,8 @@ class Tags extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'slug' => 'Slug',
+            'name' => 'Название',
+            'slug' => 'Транслит',
         ];
     }
 }
