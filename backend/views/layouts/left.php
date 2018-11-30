@@ -25,7 +25,7 @@
             </div>
         </form>
         <!-- /.search form -->
-
+        <?= $this->context->id ?>
         <?= dmstr\widgets\Menu::widget(
             [
                 'options' => ['class' => 'sidebar-menu tree', 'data-widget' => 'tree'],
@@ -37,6 +37,12 @@
                         'icon' => 'user',
                         'url' => ['/user'],
                         'active' => $this->context->id === 'user'
+                    ],
+                    [
+                        'label' => 'Метки',
+                        'icon' => 'tags',
+                        'url' => ['/shop/tags'],
+                        'active' => $this->context->id === 'shop/tags'
                     ],
 //                    ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug']],
 //                    ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
